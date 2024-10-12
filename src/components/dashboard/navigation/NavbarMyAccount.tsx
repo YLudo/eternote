@@ -7,7 +7,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { LayoutGrid, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function NavbarMyAccount() {
     const { data: session } = useSession();
@@ -24,7 +23,7 @@ export default function NavbarMyAccount() {
                             >
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar" />
-                                    <AvatarFallback className="bg-transparent">{session.user?.name?.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="bg-transparent">{session?.user?.name?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
