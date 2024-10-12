@@ -11,7 +11,7 @@ export default async function LoginPage() {
     }
 
     return (
-        <Card>
+        <Card className="w-full max-w-md">
             <CardHeader>
                 <CardTitle>Se connecter</CardTitle>
                 <CardDescription>Remplissez les champs ci-dessous pour vous connecter à votre compte.</CardDescription>

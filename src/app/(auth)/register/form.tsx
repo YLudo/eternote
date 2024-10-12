@@ -24,6 +24,9 @@ const FormSchema = z.object({
         .string()
         .min(6, {
             message: "Votre mot de passe doit faire 6 caractères minimum."
+        })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*.?&])[A-Za-z\d@$!%*.?&]{6,}$/, {
+            message: "Votre mot de passe doit contenir au moins 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial."
         }),
 });
 
@@ -98,7 +101,7 @@ export default function RegisterForm() {
                         <FormItem>
                             <FormLabel>Mot de passe</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="Entrez votre adresse e-mail" {...field} />         
+                                <Input type="password" placeholder="Entrez votre mot de passe" {...field} />         
                             </FormControl>
                             <FormMessage />
                         </FormItem>

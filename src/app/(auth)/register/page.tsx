@@ -11,7 +11,7 @@ export default async function RegisterPage() {
     }
 
     return (
-        <Card>
+        <Card className="w-full max-w-md">
             <CardHeader>
                 <CardTitle>S'inscrire</CardTitle>
                 <CardDescription>Remplissez les champs ci-dessous pour vous créer un compte.</CardDescription>
