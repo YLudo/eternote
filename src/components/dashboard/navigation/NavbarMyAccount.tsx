@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LayoutGrid, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function NavbarMyAccount() {
+    const { data: session } = useSession();
+
     return (
         <DropdownMenu>
             <TooltipProvider disableHoverableContent>
@@ -21,7 +24,7 @@ export default function NavbarMyAccount() {
                             >
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="#" alt="Avatar" />
-                                    <AvatarFallback className="bg-transparent">LR</AvatarFallback>
+                                    <AvatarFallback className="bg-transparent">{session.user?.name?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
@@ -33,9 +36,9 @@ export default function NavbarMyAccount() {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">JeSuisLudo</p>
+                        <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                            roux.ludovic.pro@gmail.com
+                            {session?.user?.email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
