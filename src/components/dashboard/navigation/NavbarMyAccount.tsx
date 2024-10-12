@@ -1,8 +1,11 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LayoutGrid, LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function NavbarMyAccount() {
@@ -46,7 +49,12 @@ export default function NavbarMyAccount() {
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="hover:cursor-pointer">
+                <DropdownMenuItem 
+                    className="hover:cursor-pointer" 
+                    onClick={() => signOut({
+                        callbackUrl: "/login"
+                    })}
+                >
                     <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
                     Se déconnecter
                 </DropdownMenuItem>

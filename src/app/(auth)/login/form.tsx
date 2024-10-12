@@ -53,7 +53,7 @@ export default function LoginForm() {
 
             toast({ title: "Connexion réussié !", description: "Vous vous êtes connecté avec succès." });
 
-            router.push("/");
+            router.push("/dashboard");
             router.refresh();
         } catch (error: any) {
             toast({ title: "Connexion échouée !", description: error.message || "Une erreur s'est produite." })
