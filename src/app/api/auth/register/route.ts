@@ -54,11 +54,17 @@ export async function POST(request: Request) {
         const mailgun = new Mailgun(formData);
         const client = mailgun.client({ username: 'api', key: MAILGUN_API_KEY });
 
+        const templateData = {
+            username: user.username,
+            link: `${process.env.NEXTAUTH_URL}/activate/${token.token}`
+        };
+
         const messageData = {
             from: `Eternote <hello@${MAILGUN_DOMAIN}>`,
             to: user.email,
-            subject: "Confirme ton adresse email pour activer ton compte Eternote",
-            text: `Bonjour ${user.username}, clique sur ce lien pour confirmer ton adresse et activer ton compte Eternote : ${process.env.NEXTAUTH_URL}/activate/${token.token}`,
+            subject: "Bienvenue sur Eternote – Activez votre compte dès maintenant !",
+            template: "Mail d'activation",
+            'h:X-Mailgun-Variables': JSON.stringify(templateData)
         };
 
         await client.messages.create(MAILGUN_DOMAIN, messageData);
