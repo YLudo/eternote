@@ -60,6 +60,7 @@ export default function RegisterForm() {
             }
 
             toast({ title: "Inscription réussie !", description: "Un lien d'activation a été envoyé à votre adresse e-mail." });
+            form.reset();
         } catch (error: any) {
             toast({ title: "Inscription échouée !", description: error.message || "Une erreur s'est produite." });
         }
