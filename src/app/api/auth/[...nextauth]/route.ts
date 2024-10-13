@@ -33,6 +33,10 @@ const handler = NextAuth({
                     throw new Error("L'adresse e-mail spécifiée n'existe pas.");
                 }
 
+                if(!user.active) {
+                    throw new Error("Veuillez vérifier votre adresse e-mail.");
+                }
+
                 const isPasswordValid = await compare(credentials.password, user.password);
 
                 if (!isPasswordValid) {

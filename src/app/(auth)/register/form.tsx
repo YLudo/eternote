@@ -59,7 +59,7 @@ export default function RegisterForm() {
                 throw new Error(result.message || "Une erreur inconnue s'est produite.");
             }
 
-            toast({ title: "Inscription réussie !", description: "Vous vous êtes inscrit avec succès." });
+            toast({ title: "Inscription réussie !", description: "Un lien d'activation a été envoyé à votre adresse e-mail." });
         } catch (error: any) {
             toast({ title: "Inscription échouée !", description: error.message || "Une erreur s'est produite." });
         }
