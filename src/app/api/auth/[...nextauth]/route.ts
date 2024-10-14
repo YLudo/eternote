@@ -1,9 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import { compare } from "bcrypt";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
     session: {
         strategy: "jwt",
     },
@@ -51,6 +51,14 @@ const handler = NextAuth({
             },
         }),
     ],
-});
+    callbacks: {
+        session({ session, token }) {
+            session.user.id = token.sub;
+            return session
+        }
+    }
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST};

@@ -24,6 +24,7 @@ model User {
   updatedAt DateTime @updatedAt @default(now())
 
   activateTokens ActivateToken[]
+  capsules Capsule[]
 }
 
 model ActivateToken {
@@ -35,4 +36,17 @@ model ActivateToken {
   updatedAt   DateTime  @updatedAt @default(now())
 
   user        User      @relation(fields: [userId], references: [id])
+}
+
+model Capsule {
+  id         String    @default(cuid()) @id
+  userId     String
+  title      String
+  content    String?
+  unlockDate DateTime?
+  isClosed   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt @default(now())
+
+  user       User      @relation(fields: [userId], references: [id])
 }
