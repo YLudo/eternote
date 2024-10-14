@@ -4,6 +4,7 @@ import { Timer } from "lucide-react";
 export default function NavbarMenu() {
     const links = [
         { href: "/dashboard", label: "Tableau de bord", },
+        { href: "/capsules", label: "Mes capsules", },
         { href: "/capsules/create", label: "Créer une capsule", },
     ];
 

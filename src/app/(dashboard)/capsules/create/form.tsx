@@ -16,25 +16,14 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { fr } from "date-fns/locale";
 
-const getTomorrowDate = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
-};
-
 const FormSchema = z.object({
     title: z
         .string()
         .min(3, {
             message: "Le titre de votre capsule doit faire 3 caractères minimum."
         }),
-    content: z
-        .nullable(
-            z.string()
-        ),
-    unlockDate: z.date({
-        required_error: "Vous devez spécifier une date d'ouverture.",
-    }),
+    content: z.string().optional(),
+    unlockDate: z.date().nullable().optional(),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -46,7 +35,7 @@ export default function CreateCapsuleForm() {
         defaultValues: {
             title: "",
             content: "",
-            unlockDate: getTomorrowDate(),
+            unlockDate: null,
         },
     });
 
@@ -69,7 +58,7 @@ export default function CreateCapsuleForm() {
     
             toast({ title: "Création de capsule réussie !", description: "Vous avez créé votre capsule avec succès."});
 
-            router.push("/dashboard");
+            router.push("/capsules");
             router.refresh();
         } catch (error: any) {
             toast({ title: "Création de capsule échouée !", description: error.message || "Une erreur s'est produite." });
@@ -133,13 +122,20 @@ export default function CreateCapsuleForm() {
                                 <PopoverContent className="w-auto p-0" align="start">
                                     <Calendar
                                         mode="single"
-                                        selected={field.value}
+                                        selected={field.value || undefined}
                                         onSelect={field.onChange}
                                         disabled={(date) =>
                                             date < new Date()
                                         }
                                         initialFocus
                                     />
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => field.onChange(null)}
+                                        className="mt-2"
+                                    >
+                                        Effacer la date
+                                    </Button>
                                 </PopoverContent>
                             </Popover>
                             <FormMessage />
