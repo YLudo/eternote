@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import CapsuleList from "@/components/dashboard/capsules/CapsuleList";
-import { ICapsule } from "@/types/interfaces";
+import { IPartialCapsule } from "@/types/interfaces";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
@@ -27,12 +27,13 @@ export default async function CapsuleListPage() {
     )
 }
 
-async function getCapsules(userId: string): Promise<ICapsule[]> {
+async function getCapsules(userId: string): Promise<IPartialCapsule[]> {
     const capsules =  await prisma.capsule.findMany({
         where: {
             userId: userId,
         },
         select: {
+            id: true,
             title: true,
             unlockDate: true,
             user: {
@@ -44,6 +45,7 @@ async function getCapsules(userId: string): Promise<ICapsule[]> {
     });
 
     return capsules.map(capsule => ({
+        id: capsule.id,
         title: capsule.title,
         unlockDate: capsule.unlockDate,
         username: capsule.user.username,

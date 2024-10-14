@@ -1,20 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ICapsule } from "@/types/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import * as  z from "zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { fr } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { redirect, useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { Calendar } from "@/components/ui/calendar";
+import * as z from "zod";
+import { toast } from "@/hooks/use-toast";
 
 const FormSchema = z.object({
     title: z
@@ -22,48 +23,44 @@ const FormSchema = z.object({
         .min(3, {
             message: "Le titre de votre capsule doit faire 3 caractères minimum."
         }),
-    content: z.string().optional(),
+    content: z.string().nullable().optional(),
     unlockDate: z.date().nullable().optional(),
 });
 
 type FormData = z.infer<typeof FormSchema>;
 
-export default function CreateCapsuleForm() {
+export default function EditCapsuleForm({ capsuleId, capsule }: { capsuleId: string, capsule: ICapsule }) {
     const router = useRouter();
     const form = useForm({
         resolver: zodResolver(FormSchema),
-        defaultValues: {
-            title: "",
-            content: "",
-            unlockDate: null,
-        },
+        defaultValues: capsule,
     });
 
     const onSubmit = async (data: FormData) => {
         const { title, content, unlockDate } = data;
+        console.log(unlockDate);
 
         try {
-            const response = await fetch("/api/capsules", {
-                method: "POST",
+            const response = await fetch(`/api/capsules/edit/${capsuleId}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ title, content, unlockDate }),
             });
-    
+
             const result = await response.json();
             if (!response.ok) {
-                throw new Error(result.message || "Une erreur inconnu s'est produite.");
+                throw new Error(result.message || "Une erreur inconnue s'est produite.");
             }
-    
-            toast({ title: "Création de capsule réussie !", description: "Vous avez créé votre capsule avec succès."});
 
+            toast({ title: "Modification de capsule réussie !", description: "Vous avez modifié votre capsule avec succès." });
             router.push("/capsules");
             router.refresh();
         } catch (error: any) {
-            toast({ title: "Création de capsule échouée !", description: error.message || "Une erreur s'est produite." });
+            toast({ title: "Modification de capsule échouée !", description: error.message || "Une erreur s'est produite." });
         }
-    };
+    }
 
     return (
         <Form {...form}>
@@ -88,7 +85,7 @@ export default function CreateCapsuleForm() {
                         <FormItem>
                             <FormLabel>Contenu de la capsule</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Entrez le contenu de votre capsule..." {...field} />
+                                <Textarea placeholder="Entrez le contenu de votre capsule..." {...field} value={field.value ?? ""} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -131,7 +128,9 @@ export default function CreateCapsuleForm() {
                                     />
                                     <Button
                                         variant="ghost"
-                                        onClick={() => field.onChange(null)}
+                                        onClick={() => {
+                                            form.setValue("unlockDate", null);
+                                        }}
                                         className="mt-2"
                                     >
                                         Effacer la date
@@ -142,8 +141,8 @@ export default function CreateCapsuleForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full">Créer votre capsule</Button>
+                <Button type="submit" className="w-full">Modifier votre capsule</Button>
             </form>
         </Form>
-    )
+    );
 }
