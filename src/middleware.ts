@@ -9,5 +9,3 @@ export default withAuth({
 export const config = {
     matcher: ["/dashboard"],
 };
-
-console.log("Middleware executed");

@@ -71,7 +71,6 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ message: "Un lien d'activation a été envoyé à votre adresse e-mail." }, { status: 201 });
     } catch (e) {
-        console.log(e);
         return NextResponse.json({ message: "Erreur interne du serveur" }, { status: 500 });
     }
 }
