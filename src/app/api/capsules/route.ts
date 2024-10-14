@@ -13,18 +13,35 @@ export async function POST(request: Request) {
 
         const { title, content, unlockDate } = await request.json();
 
-        if (new Date(unlockDate) <= new Date()) {
-            return NextResponse.json({ message: "Vous devez spécifier une date dans le futur." }, { status: 400 });
-        }
+        if (unlockDate) {
+            const unlockDateObj = new Date(unlockDate);
+            if (isNaN(unlockDateObj.getTime())) {
+              return NextResponse.json(
+                { message: "La date d'ouverture n'est pas valide." },
+                { status: 400 }
+              );
+            }
+            if (unlockDateObj <= new Date()) {
+              return NextResponse.json(
+                { message: "Vous devez spécifier une date dans le futur." },
+                { status: 400 }
+              );
+            }
+          }
 
-        const capsule = await prisma.capsule.create({
-            data: {
-                title,
-                content,
-                unlockDate: new Date(unlockDate),
-                userId: session.user.id,
-            },
-        });
+          const capsuleData: any = {
+            title,
+            content,
+            userId: session.user.id,
+          };
+      
+          if (unlockDate) {
+            capsuleData.unlockDate = new Date(unlockDate);
+          }
+      
+          const capsule = await prisma.capsule.create({
+            data: capsuleData,
+          });
 
         return NextResponse.json({ message: "Votre capsule a été créé avec succès." }, { status: 201 });
     } catch (e) {
