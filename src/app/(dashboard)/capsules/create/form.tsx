@@ -16,6 +16,8 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { fr } from "date-fns/locale";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const FormSchema = z.object({
     title: z
@@ -31,7 +33,8 @@ const FormSchema = z.object({
 type FormData = z.infer<typeof FormSchema>;
 
 export default function CreateCapsuleForm() {
-    const router = useRouter();
+    const [showModal, setShowModal] = useState(false);
+    const [formData, setFormData] = useState<FormData | null>(null);
     const form = useForm({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -42,7 +45,18 @@ export default function CreateCapsuleForm() {
         },
     });
 
+    const router = useRouter();
+
     const onSubmit = async (data: FormData) => {
+        if (data.isClosed) {
+            setFormData(data);
+            setShowModal(true);
+        } else {
+            await submitForm(data);
+        }
+    };
+
+    const submitForm = async (data: FormData) => {
         const { title, content, unlockDate, isClosed } = data;
 
         try {
@@ -68,101 +82,125 @@ export default function CreateCapsuleForm() {
         }
     };
 
+    const handleConfirm = async () => {
+        if (formData) {
+            await submitForm(formData);
+            setShowModal(false);
+        }
+    };
+
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Titre de la capsule</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Entrez le titre de votre capsule" {...field} />         
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Contenu de la capsule</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Entrez le contenu de votre capsule..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="unlockDate"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                            <FormLabel>Date d'ouverture</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
+        <>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Titre de la capsule</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Entrez le titre de votre capsule" {...field} />         
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Contenu de la capsule</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="Entrez le contenu de votre capsule..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="unlockDate"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                                <FormLabel>Date d'ouverture</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "pl-3 text-left font-normal w-full",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {field.value ? (
+                                                    format(field.value, "PPP", { locale: fr })
+                                                ) : (
+                                                    <span>Choisissez une date</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value || undefined}
+                                            onSelect={field.onChange}
+                                            disabled={(date) =>
+                                                date < new Date()
+                                            }
+                                            initialFocus
+                                        />
                                         <Button
-                                            variant={"outline"}
-                                            className={cn(
-                                                "pl-3 text-left font-normal w-full",
-                                                !field.value && "text-muted-foreground"
-                                            )}
+                                            variant="ghost"
+                                            onClick={() => field.onChange(null)}
+                                            className="mt-2"
                                         >
-                                            {field.value ? (
-                                                format(field.value, "PPP", { locale: fr })
-                                            ) : (
-                                                <span>Choisissez une date</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            Effacer la date
                                         </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value || undefined}
-                                        onSelect={field.onChange}
-                                        disabled={(date) =>
-                                            date < new Date()
-                                        }
-                                        initialFocus
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="isClosed"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center space-x-3">
+                                <FormLabel>Verrouiller la capsule</FormLabel>
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={(checked) => field.onChange(checked)}
                                     />
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() => field.onChange(null)}
-                                        className="mt-2"
-                                    >
-                                        Effacer la date
-                                    </Button>
-                                </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="isClosed"
-                    render={({ field }) => (
-                        <FormItem className="flex items-center space-x-3">
-                            <FormLabel>Verrouiller la capsule</FormLabel>
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={(checked) => field.onChange(checked)}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" className="w-full">Créer votre capsule</Button>
-            </form>
-        </Form>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full">Créer votre capsule</Button>
+                </form>
+            </Form>
+            
+            <Dialog open={showModal} onOpenChange={setShowModal}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirmer la création et le verrouillage</DialogTitle>
+                    </DialogHeader>
+                    <p>Êtes-vous sûr de vouloir verrouiller cette capsule ? Une fois verrouillée, elle ne pourra plus être modifiée.</p>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowModal(false)}>
+                            Annuler
+                        </Button>
+                        <Button onClick={handleConfirm}>Confirmer</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
