@@ -23,6 +23,10 @@ export async function PUT(request: Request, params: any) {
       return NextResponse.json({ message: "La capsule spécifiée n'existe pas." }, { status: 404 });
     }
 
+    if (existingCapsule.userId !== session.user.id) {
+      return NextResponse.json({ message: "Vous n'êtes pas autorisé à supprimer cette capsule." }, { status: 403 });
+  }
+
     if (existingCapsule.isClosed) {
       return NextResponse.json({ message: "La capsule est verrouillé et ne peut pas être modifiée." }, { status: 403 });
     }
