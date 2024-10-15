@@ -8,13 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as  z from "zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { fr } from "date-fns/locale";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const FormSchema = z.object({
     title: z
@@ -24,6 +25,7 @@ const FormSchema = z.object({
         }),
     content: z.string().optional(),
     unlockDate: z.date().nullable().optional(),
+    isClosed: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -36,11 +38,12 @@ export default function CreateCapsuleForm() {
             title: "",
             content: "",
             unlockDate: null,
+            isClosed: false,
         },
     });
 
     const onSubmit = async (data: FormData) => {
-        const { title, content, unlockDate } = data;
+        const { title, content, unlockDate, isClosed } = data;
 
         try {
             const response = await fetch("/api/capsules", {
@@ -48,7 +51,7 @@ export default function CreateCapsuleForm() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ title, content, unlockDate }),
+                body: JSON.stringify({ title, content, unlockDate, isClosed }),
             });
     
             const result = await response.json();
@@ -138,6 +141,22 @@ export default function CreateCapsuleForm() {
                                     </Button>
                                 </PopoverContent>
                             </Popover>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="isClosed"
+                    render={({ field }) => (
+                        <FormItem className="flex items-center space-x-3">
+                            <FormLabel>Verrouiller la capsule</FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={(checked) => field.onChange(checked)}
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

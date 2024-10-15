@@ -36,6 +36,7 @@ async function getCapsules(userId: string): Promise<IPartialCapsule[]> {
             id: true,
             title: true,
             unlockDate: true,
+            isClosed: true,
             user: {
                 select: {
                     username: true,
@@ -48,6 +49,7 @@ async function getCapsules(userId: string): Promise<IPartialCapsule[]> {
         id: capsule.id,
         title: capsule.title,
         unlockDate: capsule.unlockDate,
+        isClosed: capsule.isClosed,
         username: capsule.user.username,
     }));
 }

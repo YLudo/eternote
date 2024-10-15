@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ICapsule } from "@/types/interfaces";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import EditCapsuleForm from "./form";
 
@@ -36,6 +36,7 @@ async function getCapsule(capsuleId: string): Promise<ICapsule | null> {
             title: true,
             content: true,
             unlockDate: true,
+            isClosed: true,
         }
     });
 

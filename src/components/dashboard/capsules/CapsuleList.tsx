@@ -11,6 +11,7 @@ export default function CapsuleList({ capsules }: IPartialCapsuleList) {
                     title={capsule.title}
                     unlockDate={capsule.unlockDate}
                     username={capsule.username}
+                    isClosed={capsule.isClosed}
                 />
             ))}
         </div>
