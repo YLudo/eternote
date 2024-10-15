@@ -3,6 +3,7 @@ export interface IPartialCapsule {
     title: string;
     unlockDate: Date | null;
     username: string;
+    isClosed: boolean;
 }
 
 export interface IPartialCapsuleList {
@@ -13,4 +14,5 @@ export interface ICapsule {
     title: string;
     content: string | null;
     unlockDate: Date | null;
+    isClosed: boolean;
 }
