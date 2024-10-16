@@ -33,17 +33,21 @@ export default async function CapsulteEditPage({ params }: { params: any}) {
 }
 
 async function getCapsule(capsuleId: string): Promise<ICapsule | null> {
-    const capsule = await prisma.capsule.findUnique({
-        where: {
-            id: capsuleId,
-        },
-        select: {
-            title: true,
-            content: true,
-            unlockDate: true,
-            isClosed: true,
-        }
-    });
-
-    return capsule;
+    try {
+        const capsule = await prisma.capsule.findUnique({
+            where: {
+                id: capsuleId,
+            },
+            select: {
+                title: true,
+                content: true,
+                unlockDate: true,
+                isClosed: true,
+            }
+        });
+    
+        return capsule;
+    } catch (error) {
+        redirect("/capsules");
+    }
 }
