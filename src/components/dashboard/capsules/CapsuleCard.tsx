@@ -1,12 +1,12 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge, BadgeProps } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { IPartialCapsule } from "@/types/interfaces";
 import { Calendar, MoreVertical, Pencil, Trash, User } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +16,25 @@ export default function CapsuleCard({ id, title, unlockDate, username, isClosed 
     const isDateDefined = unlockDate !== null;
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+
+    const currentDate = new Date();
+    const unlockDateObj = isDateDefined ? new Date(unlockDate!) : null;
+
+    const canBeOpened = isClosed && isDateDefined && unlockDateObj! <= currentDate;
+
+    let badgeLabel = '';
+    let badgeVariant: BadgeProps['variant'] = 'secondary';
+
+    if (!isClosed) {
+        badgeLabel = 'Modifiable';
+        badgeVariant = 'secondary';
+    } else if (isClosed && isDateDefined && unlockDateObj! > currentDate) {
+        badgeLabel = 'Verrouillée';
+        badgeVariant = 'default';
+    } else if (canBeOpened) {
+        badgeLabel = 'Ouvrable';
+        badgeVariant = 'default';
+    }
 
     const handleDeleteClick = () => {
         setShowModal(true);
@@ -55,7 +74,7 @@ export default function CapsuleCard({ id, title, unlockDate, username, isClosed 
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                { !isClosed && 
+                                {!isClosed && 
                                 <DropdownMenuItem asChild>
                                     <Link href={`/capsules/edit/${id}`}>
                                         <Pencil className="mr-2 h-4 w-4" />
@@ -82,10 +101,11 @@ export default function CapsuleCard({ id, title, unlockDate, username, isClosed 
                         </span>
                     </div>
                 </CardContent>
-                <CardFooter>
-                    <Badge variant={isClosed ? "default" : "secondary"}>
-                        {isClosed ? "Verrouillée" : "Modifiable"}
+                <CardFooter className="flex items-center justify-between">
+                    <Badge variant={badgeVariant}>
+                        {badgeLabel}
                     </Badge>
+                    <Link href="#" className={buttonVariants({ variant: "default" })}>Ouvrir</Link>
                 </CardFooter>
             </Card>
 
